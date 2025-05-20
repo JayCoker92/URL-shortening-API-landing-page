@@ -25,7 +25,7 @@ const Shortener = () => {
       setError("");
       setLoading(true);
       // Log the URL being sent to the API
-      console.log("Fetching API with URL:", url);
+      // console.log("Fetching API with URL:", url);
 
       // Construct the API endpoint with the user-provided URL as a query parameter
       const apiUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(
@@ -40,7 +40,7 @@ const Shortener = () => {
       });
 
       // Log the raw response
-      console.log("Raw Response:", response);
+      // console.log("Raw Response:", response);
 
       if (!response.ok) {
         throw new Error("Failed to fetch the shortened URL");
@@ -49,7 +49,7 @@ const Shortener = () => {
       const data = await response.text(); // TinyURL API returns plain text, not JSON
 
       // Log the API response
-      console.log("API Response:", data);
+      // console.log("API Response:", data);
 
       if (data) {
         const newShortenedUrl = data;
@@ -64,7 +64,7 @@ const Shortener = () => {
         localStorage.setItem("shortenedUrls", JSON.stringify(updatedHistory));
       } else {
         setError("Failed to shorten the URL. Please try again.");
-        console.error("API Error: No data returned");
+        // console.error("API Error: No data returned");
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -72,6 +72,11 @@ const Shortener = () => {
     } finally {
       setLoading(false);
     }
+  };
+  // Clear history function
+  const handleClearHistory = () => {
+    setHistory([]); // Clear the history state
+    localStorage.removeItem("shortenedUrls"); // Remove from localStorage
   };
 
   const handleCopyToClipboard = (urlToCopy, index) => {
@@ -102,11 +107,11 @@ const Shortener = () => {
             placeholder="Shorten a link here..."
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="flex-1 bg-white px-4 py-3 border border-gray-300 rounded-lg text-amber-600 focus:outline-none focus:ring-2 focus:ring-[#e05207]  w-full"
+            className="flex-1 bg-white px-4 py-3 border border-gray-300 text-amber-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--Red)]  w-full"
           />
           <button
             onClick={handleShortenUrl}
-            className="bg-[#2BD1D0] text-white px-10 py-3 text-lg font-bold rounded-lg cursor-pointer hover:bg-[#9DE1E2] transition duration-300  w-full md:w-auto"
+            className="bg-[#2BD1D0] text-white px-10 py-3 text-lg font-bold rounded-lg hover:bg-[#9DE1E2] transition duration-300  w-full md:w-auto"
           >
             {loading ? "Shortening..." : "Shorten It!"}
           </button>
@@ -117,38 +122,51 @@ const Shortener = () => {
       </div>
 
       {/* Display shortened URLs */}
-      <ul className="mt-6 space-y-4">
-        {history.map((item, index) => (
-          <li
-            key={index}
-            className="bg-white p-4 rounded-lg flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 shadow-md"
-          >
-            <span className="text-[#3E3D41] text-lg font-medium break-all border-b md:border-none pb-2 md:pb-0 w-full">
-              {item.original}
-            </span>
-            <div className="flex flex-col md:flex-row items-left space-y-4 md:space-y-0 md:space-x-4 w-full">
-              <a
-                href={item.shortened}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#2BD1D0] pt-3 md:ml-auto font-medium break-all"
+      {history.length > 0 && (
+        <div className="mt-6">
+          <div className="flex justify-between items-center mb-4">
+            
+          </div>
+          <ul className="space-y-4 items-center">
+            {history.map((item, index) => (
+              <li
+                key={index}
+                className="bg-white p-4 rounded-lg flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 shadow-md"
               >
-                {item.shortened}
-              </a>
-              <button
-                onClick={() => handleCopyToClipboard(item.shortened, index)}
-                className={`${
-                  item.copied
-                    ? "bg-[#3A3053] text-white"
-                    : "bg-[#2BD1D0] text-white"
-                } px-8 py-3 rounded-lg hover:opacity-90 transition duration-300 md:ml-auto text-xl font-bold hover:bg-[#9DE1E2] cursor-pointer `}
-              >
-                {item.copied ? "Copied!" : "Copy"}
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+                <span className="text-[#3E3D41] text-lg font-medium break-all border-b md:border-none items-center md:pb-0 w-full">
+                  {item.original}
+                </span>
+                <div className="flex flex-col md:flex-row items-left space-y-4 md:space-y-0 md:space-x-4 w-full">
+                  <a
+                    href={item.shortened}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#2BD1D0] font-bold break-all"
+                  >
+                    {item.shortened}
+                  </a>
+                  <button
+                    onClick={() => handleCopyToClipboard(item.shortened, index)}
+                    className={`${
+                      item.copied
+                        ? "bg-[#3A3053] text-white"
+                        : "bg-[#2BD1D0] text-white"
+                    } px-8 py-3 rounded-lg hover:opacity-90 transition duration-300 md:ml-auto text-xl font-bold hover:bg-[#9DE1E2]`}
+                  >
+                    {item.copied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <button
+              onClick={handleClearHistory}
+              className="bg-[#2BD1D0] text-white px-4 py-2 rounded-lg hover:bg-[#9DE1E2] my-6 transition duration-300 text-sm md:text-base"
+            >
+              Clear History
+            </button>
+        </div>
+      )}
     </div>
   );
 };

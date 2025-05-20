@@ -66,7 +66,7 @@ const Navbar = () => {
    </div>
 
    <button onClick={()=> setIsOpen(!isOpen)} className="uppercase text-sm tracking-wide md:hidden">
-     {isOpen ? <img src={HamburgerIcon} alt="" /> : "Menu"}
+   <img src={HamburgerIcon} alt="" />
    </button>
 </div>
    
